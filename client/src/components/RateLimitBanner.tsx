@@ -13,7 +13,7 @@ export default function RateLimitBanner() {
     <div className="fixed top-20 left-0 right-0 z-50 px-4 md:px-0 flex justify-center">
       <Alert
         variant="destructive"
-        className="max-w-2xl shadow-lg bg-red-50 border-red-200 text-red-800"
+        className="max-w-2xl shadow-xl bg-red-950/90 border-red-800/80 text-red-200"
       >
         <AlertTriangle className="h-4 w-4" />
         <AlertTitle>Rate Limit Exceeded</AlertTitle>

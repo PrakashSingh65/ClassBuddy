@@ -147,39 +147,40 @@ export default function AuthComponent() {
       <DialogTrigger asChild>
         <Button
           variant="secondary"
-          className="rounded-xl px-6 py-2 bg-gradient-to-r from-primary to-violet-600 text-white hover:from-primary/90 hover:to-violet-600/90 shadow-md shadow-violet-500/20 cursor-pointer transition-all hover:scale-105 active:scale-95"
+          className="rounded-xl px-6 py-2 bg-emerald-400 hover:bg-emerald-300 text-black font-bold shadow-md shadow-emerald-500/20 cursor-pointer transition-all hover:scale-105 active:scale-95 border-0"
         >
           Login
         </Button>
       </DialogTrigger>
 
       {/* Content */}
-      <DialogContent className="sm:max-w-md bg-card border-border text-card-foreground rounded-2xl shadow-2xl">
+      <DialogContent className="sm:max-w-md bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white rounded-2xl shadow-2xl">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-primary to-violet-500">
-            Welcome to ClassBuddy
+          <DialogTitle className="text-2xl font-bold text-center">
+            <span className="text-black dark:text-white">Welcome to </span>
+            <span className="text-emerald-500 dark:text-emerald-400">ClassBuddy</span>
           </DialogTitle>
-          <DialogDescription className="text-center text-muted-foreground">
+          <DialogDescription className="text-center text-neutral-600 dark:text-neutral-400">
             Please log in to your account or sign up to get started.
           </DialogDescription>
         </DialogHeader>
 
         {/* Tabs */}
         <Tabs defaultValue="login" className="w-full mt-4">
-          <TabsList className="grid w-full grid-cols-2 bg-muted rounded-lg p-1">
-            <TabsTrigger value="login">Log In</TabsTrigger>
-            <TabsTrigger value="signup">Sign Up</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg p-1">
+            <TabsTrigger value="login" className="data-[state=active]:bg-white data-[state=active]:text-emerald-700 data-[state=active]:shadow-2xs text-neutral-600 dark:data-[state=active]:bg-neutral-800 dark:data-[state=active]:text-emerald-300 dark:text-neutral-300 font-semibold">Log In</TabsTrigger>
+            <TabsTrigger value="signup" className="data-[state=active]:bg-white data-[state=active]:text-emerald-700 data-[state=active]:shadow-2xs text-neutral-600 dark:data-[state=active]:bg-neutral-800 dark:data-[state=active]:text-emerald-300 dark:text-neutral-300 font-semibold">Sign Up</TabsTrigger>
           </TabsList>
 
           {/* LOGIN */}
           <TabsContent value="login">
             <form className="space-y-4 mt-6" onSubmit={handleLoginSubmit}>
               <div className="grid gap-2 w-full">
-                <Label htmlFor="login_email" className="text-foreground">
+                <Label htmlFor="login_email" className="text-neutral-900 dark:text-white">
                   Email ID
                 </Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-violet-500" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-500 dark:text-emerald-400" />
                   <Input
                     id="login_email"
                     type="email"
@@ -187,18 +188,18 @@ export default function AuthComponent() {
                     name="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 bg-background border-input rounded-lg text-foreground focus:border-violet-500 focus:ring-violet-500"
+                    className="pl-10 bg-neutral-50 dark:bg-neutral-900/90 border-neutral-200 dark:border-neutral-800 rounded-lg text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:border-emerald-500 dark:focus:border-emerald-400 focus:ring-emerald-500/20"
                     required
                   />
                 </div>
               </div>
 
               <div className="grid gap-2 w-full">
-                <Label htmlFor="login_password" className="text-foreground">
+                <Label htmlFor="login_password" className="text-neutral-900 dark:text-white">
                   Password
                 </Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-violet-500" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-500 dark:text-emerald-400" />
                   <Input
                     id="login_password"
                     type="password"
@@ -206,7 +207,7 @@ export default function AuthComponent() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter your password"
-                    className="pl-10 bg-background border-input rounded-lg text-foreground focus:border-violet-500 focus:ring-violet-500"
+                    className="pl-10 bg-neutral-50 dark:bg-neutral-900/90 border-neutral-200 dark:border-neutral-800 rounded-lg text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:border-emerald-500 dark:focus:border-emerald-400 focus:ring-emerald-500/20"
                     required
                   />
                 </div>
@@ -214,11 +215,11 @@ export default function AuthComponent() {
 
               <DialogFooter className="flex justify-between mt-6">
                 <DialogClose asChild>
-                  <Button variant="secondary" className="rounded-lg">
+                  <Button variant="secondary" className="rounded-lg bg-neutral-100 hover:bg-neutral-200 text-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-800">
                     Cancel
                   </Button>
                 </DialogClose>
-                <Button type="submit" disabled={loading}>
+                <Button type="submit" disabled={loading} className="bg-emerald-400 hover:bg-emerald-300 text-black font-bold shadow-md shadow-emerald-500/10 dark:shadow-emerald-500/20 border-0 cursor-pointer">
                   {loading && <Loader className="animate-spin mr-2" />}
                   Log In
                 </Button>
@@ -242,7 +243,7 @@ export default function AuthComponent() {
                 />
                 <label
                   htmlFor="fileInput"
-                  className="cursor-pointer w-24 h-24 rounded-full border-2 border-dashed border-gray-400 flex items-center justify-center transition duration-300 ease-in-out hover:bg-gray-100"
+                  className="cursor-pointer w-24 h-24 rounded-full border-2 border-dashed border-neutral-300 dark:border-neutral-700 flex items-center justify-center transition duration-300 ease-in-out hover:bg-emerald-50/50 dark:hover:bg-neutral-900 hover:border-emerald-500 dark:hover:border-emerald-400"
                   aria-label="Upload Image"
                 >
                   {uploadImage ? (
@@ -252,7 +253,7 @@ export default function AuthComponent() {
                       className="w-full h-full object-cover rounded-full"
                     />
                   ) : (
-                    <span className="text-muted-foreground text-center">
+                    <span className="text-neutral-500 dark:text-neutral-400 text-center text-xs px-2">
                       Upload Image
                     </span>
                   )}
@@ -260,18 +261,18 @@ export default function AuthComponent() {
               </div>
 
               <div className="grid gap-2 w-full">
-                <Label htmlFor="fullName" className="text-foreground">
+                <Label htmlFor="fullName" className="text-neutral-900 dark:text-white">
                   FullName
                 </Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-violet-500" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-500 dark:text-emerald-400" />
                   <Input
                     id="fullName"
                     placeholder="Enter your Full Name"
                     name="fullName"
                     value={formData.fullName}
                     onChange={handleInputChange}
-                    className="pl-10 bg-background border-input rounded-lg text-foreground focus:border-violet-500 focus:ring-violet-500"
+                    className="pl-10 bg-neutral-50 dark:bg-neutral-900/90 border-neutral-200 dark:border-neutral-800 rounded-lg text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:border-emerald-500 dark:focus:border-emerald-400 focus:ring-emerald-500/20"
                     required
                   />
                 </div>
@@ -279,17 +280,17 @@ export default function AuthComponent() {
 
               {/* Email */}
               <div className="grid gap-2">
-                <Label htmlFor="signup_email" className="text-foreground">
+                <Label htmlFor="signup_email" className="text-neutral-900 dark:text-white">
                   Email
                 </Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-violet-500 w-5 h-5" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-500 dark:text-emerald-400 w-5 h-5" />
                   <Input
                     id="signup_email"
                     type="email"
                     name="email"
                     placeholder="Enter your email"
-                    className="pl-10 bg-background border-input rounded-lg text-foreground focus:border-violet-500 focus:ring-violet-500"
+                    className="pl-10 bg-neutral-50 dark:bg-neutral-900/90 border-neutral-200 dark:border-neutral-800 rounded-lg text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:border-emerald-500 dark:focus:border-emerald-400 focus:ring-emerald-500/20"
                     required
                     value={formData.email}
                     onChange={handleInputChange}
@@ -298,34 +299,34 @@ export default function AuthComponent() {
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="role" className="text-foreground">
+                <Label htmlFor="role" className="text-neutral-900 dark:text-white">
                   Role
                 </Label>
                 <div className="relative">
-                  <UserCog className="absolute left-3 top-1/2 -translate-y-1/2 text-violet-500 w-5 h-5" />
+                  <UserCog className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-500 dark:text-emerald-400 w-5 h-5" />
                   <Select
                     value={formData.role}
                     onValueChange={(e) =>
                       setFormData((prev) => ({ ...prev, role: e }))
                     }
                   >
-                    <SelectTrigger className="w-full pl-10 bg-background border-input rounded-lg text-foreground focus:border-violet-500 focus:ring-violet-500">
+                    <SelectTrigger className="w-full pl-10 bg-neutral-50 dark:bg-neutral-900/90 border-neutral-200 dark:border-neutral-800 rounded-lg text-neutral-900 dark:text-white focus:border-emerald-500 dark:focus:border-emerald-400 focus:ring-emerald-500/20">
                       <SelectValue placeholder="Select a Role" />
                     </SelectTrigger>
-                    <SelectContent className="bg-card border-border">
+                    <SelectContent className="bg-white dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white shadow-xl">
                       <SelectGroup>
-                        <SelectLabel className="text-muted-foreground">
+                        <SelectLabel className="text-neutral-500 dark:text-neutral-400">
                           Roles
                         </SelectLabel>
                         <SelectItem
                           value="student"
-                          className="text-foreground focus:bg-accent"
+                          className="text-neutral-900 dark:text-white focus:bg-emerald-50 focus:text-emerald-700 dark:focus:bg-neutral-900 dark:focus:text-emerald-300 cursor-pointer"
                         >
                           Student
                         </SelectItem>
                         <SelectItem
                           value="teacher"
-                          className="text-foreground focus:bg-accent"
+                          className="text-neutral-900 dark:text-white focus:bg-emerald-50 focus:text-emerald-700 dark:focus:bg-neutral-900 dark:focus:text-emerald-300 cursor-pointer"
                         >
                           Teacher
                         </SelectItem>
@@ -337,11 +338,11 @@ export default function AuthComponent() {
 
               {/* Password */}
               <div className="grid gap-2">
-                <Label htmlFor="signup_password" className="text-foreground">
+                <Label htmlFor="signup_password" className="text-neutral-900 dark:text-white">
                   Password
                 </Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-violet-500 w-5 h-5" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-500 dark:text-emerald-400 w-5 h-5" />
                   <Input
                     id="signup_password"
                     type="password"
@@ -349,7 +350,7 @@ export default function AuthComponent() {
                     value={formData.password}
                     onChange={handleInputChange}
                     placeholder="Enter your password"
-                    className="pl-10 bg-background border-input rounded-lg text-foreground focus:border-violet-500 focus:ring-violet-500"
+                    className="pl-10 bg-neutral-50 dark:bg-neutral-900/90 border-neutral-200 dark:border-neutral-800 rounded-lg text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:border-emerald-500 dark:focus:border-emerald-400 focus:ring-emerald-500/20"
                     required
                   />
                 </div>
@@ -357,11 +358,11 @@ export default function AuthComponent() {
 
               <DialogFooter className="flex justify-between mt-6">
                 <DialogClose asChild>
-                  <Button variant="secondary" className="rounded-lg">
+                  <Button variant="secondary" className="rounded-lg bg-neutral-100 hover:bg-neutral-200 text-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-800">
                     Cancel
                   </Button>
                 </DialogClose>
-                <Button type="submit" disabled={loading}>
+                <Button type="submit" disabled={loading} className="bg-emerald-400 hover:bg-emerald-300 text-black font-bold shadow-md shadow-emerald-500/10 dark:shadow-emerald-500/20 border-0 cursor-pointer">
                   {loading && <Loader className="animate-spin mr-2" />}
                   Sign Up
                 </Button>
