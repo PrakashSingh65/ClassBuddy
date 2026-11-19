@@ -313,7 +313,9 @@
 from datetime import datetime, timedelta, timezone
 import hashlib
 import json
+import os
 import secrets
+from urllib.parse import urlparse
 import uuid
 from typing import Optional, List
 
@@ -358,12 +360,22 @@ class OAuthService:
         # Web Client
         # =========================================================
 
+        cors_origins_list = [
+            orig.strip().rstrip("/")
+            for orig in os.getenv("CORS_ORIGINS", "").split(",")
+            if orig.strip()
+        ]
+        cors_redirect_uris = [
+            f"{orig}/oauth/callback" for orig in cors_origins_list
+        ]
+
         web_redirect_uris = list(
             dict.fromkeys(
                 [
                     OAUTH_WEB_REDIRECT_URI,
                     "http://localhost:5173/oauth/callback",
                     "http://127.0.0.1:5173/oauth/callback",
+                    *cors_redirect_uris,
                 ]
             )
         )
@@ -545,16 +557,35 @@ class OAuthService:
         )
 
         if redirect_uri not in allowed_uris:
-            logger.warning(
-                f"Redirect URI mismatch for client "
-                f"{client_id}: {redirect_uri} "
-                f"not in {allowed_uris}"
+            req_parsed = urlparse(redirect_uri)
+            req_origin = f"{req_parsed.scheme}://{req_parsed.netloc}"
+            cors_origins = [o.strip().rstrip("/") for o in os.getenv("CORS_ORIGINS", "").split(",") if o.strip()]
+
+            # Allow if it's the web client with /oauth/callback path and matches CORS_ORIGINS or loopback host
+            is_valid_web_cb = (
+                client.client_id == OAUTH_WEB_CLIENT_ID
+                and req_parsed.path.rstrip("/") == "/oauth/callback"
+                and (
+                    req_origin in cors_origins
+                    or req_parsed.hostname in ("localhost", "127.0.0.1")
+                )
             )
 
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid redirect_uri for this client",
-            )
+            if is_valid_web_cb:
+                allowed_uris.append(redirect_uri)
+                client.redirect_uris = json.dumps(list(dict.fromkeys(allowed_uris)))
+                db.commit()
+            else:
+                logger.warning(
+                    f"Redirect URI mismatch for client "
+                    f"{client_id}: {redirect_uri} "
+                    f"not in {allowed_uris}"
+                )
+
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid redirect_uri for this client",
+                )
 
         # ---------------------------------------------------------
         # Scope

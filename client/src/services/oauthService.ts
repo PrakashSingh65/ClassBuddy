@@ -8,8 +8,16 @@ import {
 import type { IUser } from "@/types/user";
 
 const CLIENT_ID = import.meta.env.VITE_OAUTH_CLIENT_ID || "classbuddy-web";
-const REDIRECT_URI =
-  import.meta.env.VITE_OAUTH_REDIRECT_URI || "http://localhost:5173/oauth/callback";
+
+export const getRedirectUri = (): string => {
+  if (import.meta.env.VITE_OAUTH_REDIRECT_URI) {
+    return import.meta.env.VITE_OAUTH_REDIRECT_URI;
+  }
+  if (typeof window !== "undefined" && window.location.origin) {
+    return `${window.location.origin}/oauth/callback`;
+  }
+  return "http://localhost:5173/oauth/callback";
+};
 
 export interface ITokenResponse {
   access_token: string;
@@ -36,7 +44,7 @@ export const oauthService = {
     formData.append("email", email);
     formData.append("password", password);
     formData.append("client_id", CLIENT_ID);
-    formData.append("redirect_uri", REDIRECT_URI);
+    formData.append("redirect_uri", getRedirectUri());
     formData.append("code_challenge", challenge);
     formData.append("code_challenge_method", "S256");
     formData.append("scope", "openid profile email");
@@ -72,7 +80,7 @@ export const oauthService = {
     params.append("grant_type", "authorization_code");
     params.append("code", code);
     params.append("client_id", CLIENT_ID);
-    params.append("redirect_uri", REDIRECT_URI);
+    params.append("redirect_uri", getRedirectUri());
     params.append("code_verifier", verifier);
 
     // Endpoint sets HttpOnly Secure cookies automatically
