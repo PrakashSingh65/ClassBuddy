@@ -14,6 +14,7 @@ import {
   addMessage,
   clearMessages,
 } from "@/redux/slice/chatSlice";
+import { getApiBaseUrl } from "@/helper/axiosClient";
 
 export default function Chat() {
   const navigate = useNavigate();
@@ -52,9 +53,8 @@ export default function Chat() {
   useEffect(() => {
     if (!groupId) return;
 
-    const baseUrl =
-      import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
-    const wsUrl = baseUrl.replace(/^http/, "ws").replace(/^https/, "wss");
+    const baseUrl = getApiBaseUrl();
+    const wsUrl = baseUrl.replace(/^http:/, "ws:").replace(/^https:/, "wss:");
     const socketUrl = `${wsUrl}/group-messages/ws/${groupId}`;
 
     const ws = new WebSocket(socketUrl);

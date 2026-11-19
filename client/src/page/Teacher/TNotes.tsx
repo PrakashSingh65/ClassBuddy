@@ -12,6 +12,7 @@ import { Loader, Sparkles, BookOpen, Save, FileText, CheckCircle2, RefreshCw } f
 import { toast } from "sonner";
 import { useTheme } from "@/components/theme-provider";
 import { fetchSSEStream } from "@/helper/sseStream";
+import { getApiBaseUrl } from "@/helper/axiosClient";
 import { Badge } from "@/components/ui/badge";
 
 export default function TNotes() {
@@ -49,7 +50,7 @@ export default function TNotes() {
       let capturedNoteId: string | null = null;
 
       await fetchSSEStream({
-        url: `${import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api/v1"}/notes/notes-generates`,
+        url: `${getApiBaseUrl()}/notes/notes-generates`,
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",

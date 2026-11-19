@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from "react";
 import { fetchSSEStream, type SSEEventData } from "@/helper/sseStream";
+import { getApiBaseUrl } from "@/helper/axiosClient";
 
 export interface UseAIStreamOptions {
   url?: string;
@@ -13,7 +14,7 @@ export function useAIStream(options?: UseAIStreamOptions) {
   const [error, setError] = useState<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api/v1";
+  const baseUrl = getApiBaseUrl();
   const defaultUrl = `${baseUrl}/ai/stream`;
 
   const abortStream = useCallback(() => {

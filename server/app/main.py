@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from app.api.v1.api import app_router
+from app.api.v1.endpoints.oauth import router as oauth_router
 from app.api.v1.endpoints.inngest_route import router as inngest_router
 
 from app.utils import socket_manager
@@ -85,6 +86,8 @@ async def read_root():
 
 
 app.include_router(app_router, prefix='/api/v1', tags=['Web Route'])
+# Also mount OAuth routes directly at root /oauth for RFC compatibility and root-domain clients
+app.include_router(oauth_router, prefix='/oauth', tags=['OAuth2 Server'])
 
 
 # Mount Inngest separately

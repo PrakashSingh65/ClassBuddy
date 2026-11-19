@@ -2,7 +2,17 @@ import axios, { AxiosError } from "axios";
 import type { InternalAxiosRequestConfig } from "axios";
 import { oauthStorage } from "@/helper/oauthPKCE";
 
-const VITE_API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api/v1";
+/**
+ * Normalizes the API base URL to ensure it always includes the `/api/v1` prefix
+ * regardless of whether the environment variable has a trailing slash or omitted `/api/v1`.
+ */
+export const getApiBaseUrl = (): string => {
+  const raw = (import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api/v1").trim();
+  const clean = raw.replace(/\/+$/, "");
+  return clean.endsWith("/api/v1") ? clean : `${clean}/api/v1`;
+};
+
+const VITE_API_URL = getApiBaseUrl();
 const CLIENT_ID = import.meta.env.VITE_OAUTH_CLIENT_ID || "classbuddy-web";
 
 export const axiosClient = axios.create({
