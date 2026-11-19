@@ -26,6 +26,7 @@ import { Label } from "./ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Mail, Lock, User, UserCog, Loader } from "lucide-react";
 import { useAppDispatch } from "@/hooks/hooks";
+import { useNavigate } from "react-router-dom";
 import { login, register } from "@/redux/slice/authSlice";
 import { toast } from "sonner";
 
@@ -51,6 +52,7 @@ export default function AuthComponent() {
   });
 
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -84,7 +86,11 @@ export default function AuthComponent() {
 
     try {
       const response = await dispatch(login({ email, password })).unwrap();
-      if (response?.redirect_url) {
+      if (response?.code && response?.state) {
+        navigate(
+          `/oauth/callback?code=${encodeURIComponent(response.code)}&state=${encodeURIComponent(response.state)}`
+        );
+      } else if (response?.redirect_url) {
         window.location.href = response.redirect_url;
       }
     } catch (error: unknown) {
@@ -130,7 +136,11 @@ export default function AuthComponent() {
       const response = await dispatch(
         login({ email: formData.email, password: formData.password })
       ).unwrap();
-      if (response?.redirect_url) {
+      if (response?.code && response?.state) {
+        navigate(
+          `/oauth/callback?code=${encodeURIComponent(response.code)}&state=${encodeURIComponent(response.state)}`
+        );
+      } else if (response?.redirect_url) {
         window.location.href = response.redirect_url;
       }
     } catch (error: unknown) {

@@ -25,9 +25,9 @@ OAUTH_ANDROID_REDIRECT_URI = os.getenv("OAUTH_ANDROID_REDIRECT_URI", "classbuddy
 
 OAUTH_ALLOWED_SCOPES = os.getenv("OAUTH_ALLOWED_SCOPES", "openid,profile,email").split(",")
 
-# Cookie Configuration Defaults
-COOKIE_SECURE = os.getenv("COOKIE_SECURE", "False").lower() in ("true", "1", "yes")
-COOKIE_SAMESITE = os.getenv("COOKIE_SAMESITE", "lax")
+# Cookie Configuration Defaults (Default to Secure=True, SameSite=none for cross-domain SPA HTTPS deployments)
+COOKIE_SECURE = os.getenv("COOKIE_SECURE", "True").lower() in ("true", "1", "yes")
+COOKIE_SAMESITE = os.getenv("COOKIE_SAMESITE", "none" if COOKIE_SECURE else "lax")
 COOKIE_DOMAIN = os.getenv("COOKIE_DOMAIN")
 COOKIE_PATH = os.getenv("COOKIE_PATH", "/")
 ACCESS_TOKEN_COOKIE_NAME = os.getenv("ACCESS_TOKEN_COOKIE_NAME", "access_token")

@@ -1,4 +1,4 @@
-import { axiosClient } from "@/helper/axiosClient";
+import { axiosClient, setAccessToken } from "@/helper/axiosClient";
 import {
   generateCodeVerifier,
   generateCodeChallenge,
@@ -83,12 +83,16 @@ export const oauthService = {
     params.append("redirect_uri", getRedirectUri());
     params.append("code_verifier", verifier);
 
-    // Endpoint sets HttpOnly Secure cookies automatically
-    await axiosClient.post("/oauth/token", params, {
+    // Endpoint sets HttpOnly Secure cookies automatically and returns JSON tokens
+    const tokenRes = await axiosClient.post<ITokenResponse>("/oauth/token", params, {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
     });
+
+    if (tokenRes.data?.access_token) {
+      setAccessToken(tokenRes.data.access_token);
+    }
 
     oauthStorage.clearPKCEContext();
 
@@ -114,6 +118,7 @@ export const oauthService = {
       console.warn("Failed to revoke session on server:", error);
     } finally {
       oauthStorage.clearPKCEContext();
+      setAccessToken(null);
     }
   },
 

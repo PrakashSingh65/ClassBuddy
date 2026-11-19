@@ -1,6 +1,5 @@
 import axios, { AxiosError } from "axios";
 import type { InternalAxiosRequestConfig } from "axios";
-import { oauthStorage } from "@/helper/oauthPKCE";
 
 /**
  * Normalizes the API base URL to ensure it always includes the `/api/v1` prefix
@@ -14,6 +13,25 @@ export const getApiBaseUrl = (): string => {
 
 const VITE_API_URL = getApiBaseUrl();
 const CLIENT_ID = import.meta.env.VITE_OAUTH_CLIENT_ID || "classbuddy-web";
+
+let memoryToken: string | null = null;
+
+export const setAccessToken = (token: string | null) => {
+  memoryToken = token;
+  if (token) {
+    sessionStorage.setItem("cb_access_token", token);
+  } else {
+    sessionStorage.removeItem("cb_access_token");
+  }
+};
+
+export const getAccessToken = (): string | null => {
+  if (memoryToken) return memoryToken;
+  if (typeof window !== "undefined") {
+    return sessionStorage.getItem("cb_access_token");
+  }
+  return null;
+};
 
 export const axiosClient = axios.create({
   baseURL: VITE_API_URL,
@@ -38,13 +56,19 @@ const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue = [];
 };
 
-// Request Interceptor: Pass requests through (cookies are attached automatically via withCredentials: true)
+// Request Interceptor: Attach Bearer token header if present + cookies via withCredentials: true
 axiosClient.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => config,
+  (config: InternalAxiosRequestConfig) => {
+    const token = getAccessToken();
+    if (token && !config.headers["Authorization"]) {
+      config.headers["Authorization"] = `Bearer ${token}`;
+    }
+    return config;
+  },
   (error) => Promise.reject(error)
 );
 
-// Response Interceptor: 429 Error & Automatic Cookie Token Refresh on 401
+// Response Interceptor: 429 Error & Automatic Cookie/Bearer Token Refresh on 401
 axiosClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
@@ -83,19 +107,29 @@ axiosClient.interceptors.response.use(
         params.append("grant_type", "refresh_token");
         params.append("client_id", CLIENT_ID);
 
+        const refreshHeaders: Record<string, string> = {
+          "Content-Type": "application/x-www-form-urlencoded",
+        };
+        const currentToken = getAccessToken();
+        if (currentToken) {
+          refreshHeaders["Authorization"] = `Bearer ${currentToken}`;
+        }
+
         // Perform token refresh via separate axios call sending and receiving HttpOnly cookies
-        await axios.post(`${VITE_API_URL}/oauth/token`, params, {
+        const refreshResponse = await axios.post(`${VITE_API_URL}/oauth/token`, params, {
           withCredentials: true,
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
+          headers: refreshHeaders,
         });
 
-        processQueue(null, "cookie_updated");
+        if (refreshResponse.data?.access_token) {
+          setAccessToken(refreshResponse.data.access_token);
+        }
+
+        processQueue(null, "token_updated");
         return axiosClient(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
-        oauthStorage.clearPKCEContext();
+        setAccessToken(null);
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

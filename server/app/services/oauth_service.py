@@ -733,17 +733,7 @@ class OAuthService:
             )
 
         # ---------------------------------------------------------
-        # Redirect URI Binding
-        # ---------------------------------------------------------
-
-        if code_record.redirect_uri != redirect_uri:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Redirect URI mismatch",
-            )
-
-        # ---------------------------------------------------------
-        # Confidential Client Secret
+        # Client Retrieval
         # ---------------------------------------------------------
 
         client = (
@@ -753,6 +743,41 @@ class OAuthService:
             )
             .first()
         )
+
+        # ---------------------------------------------------------
+        # Redirect URI Binding
+        # ---------------------------------------------------------
+
+        expected_uri = (code_record.redirect_uri or "").rstrip("/")
+        provided_uri = (redirect_uri or "").rstrip("/")
+
+        if expected_uri != provided_uri:
+            # For classbuddy-web, allow transition between valid web redirect URIs (e.g. localhost -> deployed domain)
+            allowed_uris = (
+                [u.rstrip("/") for u in OAuthService._parse_redirect_uris(client.redirect_uris)]
+                if client
+                else []
+            )
+            if (
+                client_id == OAUTH_WEB_CLIENT_ID
+                and expected_uri in allowed_uris
+                and provided_uri in allowed_uris
+            ):
+                pass
+            else:
+                logger.warning(
+                    f"Redirect URI mismatch in code exchange: "
+                    f"expected '{code_record.redirect_uri}', "
+                    f"got '{redirect_uri}'"
+                )
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Redirect URI mismatch",
+                )
+
+        # ---------------------------------------------------------
+        # Confidential Client Secret
+        # ---------------------------------------------------------
 
         if (
             client

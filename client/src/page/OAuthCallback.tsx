@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { AxiosError } from "axios";
 import { oauthService } from "@/services/oauthService";
 import { useAppDispatch } from "@/hooks/hooks";
 import { checkAuth } from "@/redux/slice/authSlice";
@@ -48,7 +49,13 @@ export default function OAuthCallback() {
           navigate("/dashboard-panel/home", { replace: true });
         }
       } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : "OAuth authentication failed";
+        let message = "OAuth authentication failed";
+        if (err instanceof AxiosError && (err.response?.data as { detail?: string })?.detail) {
+          message = (err.response?.data as { detail: string }).detail;
+        } else if (err instanceof Error) {
+          message = err.message;
+        }
+        console.error("OAuth authentication error:", err);
         toast.error(message);
         navigate("/", { replace: true });
       }
